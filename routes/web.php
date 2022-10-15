@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return 'hello';
 });
 
 Route::prefix('test')->group(function() {
@@ -24,4 +25,17 @@ Route::prefix('test')->group(function() {
     Route::get('/tqi',[TestController::class, 'testQueryInsert']);
     Route::get('/tmi',[TestController::class, 'testModelInsert']);
     Route::get('/tmi1',[TestController::class, 'testModelInsert1']);
+});
+
+Route::get('/auth/huawei/redirect', function () {
+    return Socialite::driver('huawei')->redirect();
+});
+
+Route::get('/auth/huawei', function () {
+    $user = Socialite::driver('huawei')->user();
+
+    // $user->token
+    // var_export($user);
+    echo '---';
+    return json_encode($user);
 });
