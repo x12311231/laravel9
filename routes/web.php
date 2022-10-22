@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\TestController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,26 +16,16 @@ use Laravel\Socialite\Facades\Socialite;
 */
 
 Route::get('/', function () {
-    return 'hello';
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
 
-Route::prefix('test')->group(function() {
-    Route::get('/ts',[TestController::class, 'testSleep']);
-    Route::get('/t',[TestController::class, 'test']);
-    Route::get('/tqi',[TestController::class, 'testQueryInsert']);
-    Route::get('/tmi',[TestController::class, 'testModelInsert']);
-    Route::get('/tmi1',[TestController::class, 'testModelInsert1']);
-});
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/auth/huawei/redirect', function () {
-    return Socialite::driver('huawei')->redirect();
-});
-
-Route::get('/auth/huawei', function () {
-    $user = Socialite::driver('huawei')->user();
-
-    // $user->token
-    // var_export($user);
-    echo '---';
-    return json_encode($user);
-});
+require __DIR__.'/auth.php';
